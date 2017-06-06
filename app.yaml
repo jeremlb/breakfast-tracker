@@ -1,0 +1,47 @@
+runtime: python27
+threadsafe: true
+service: default
+api_version: 1
+
+handlers:
+- url: /static
+  static_dir: server/static
+
+- url: /twitter-crawler
+  script: server.main.app
+  login: admin
+
+- url: /.*
+  script: server.main.app
+  secure: always
+
+libraries:
+- name: pycrypto
+  version: 2.6
+- name: ssl
+  version: latest
+
+skip_files:
+- doc\.txt
+- node_modules/
+- .git/
+- .gitignore
+- README
+- requirements.txt
+- requirements-dev.txt
+- .bowerrc
+- .jshint
+- gulpfile.js
+- package.json
+- gitlab-ci.yaml
+- bower.json
+- tests/
+- bin/
+- server/scripts/
+- server/manage.py
+- .venv/bin
+- .venv/include
+- .venv/
+- .python-libs/setuptools
+- scripts/
+- client/

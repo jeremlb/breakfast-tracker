@@ -1,0 +1,11 @@
+**/*.pyc
+.venv/
+.build/
+.python-libs/
+node_modules/
+**/.DS_Store
+.DS_Store
+server/static
+npm-debug.log
+server/config/prod.py
+server/config/dev.py
