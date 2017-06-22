@@ -24,13 +24,14 @@ class Slack:
     def getChannelInfos(self, channelid):
         return self._makeRequest('channels.info', urlfetch.GET, {'token': self.token, 'channel': channelid})
 
+    def getGroupInfos(self, channelid):
+        return self._makeRequest('groups.info', urlfetch.GET, {'token': self.token, 'channel': channelid})
+
     def _makeRequest(self, endpoint, method, data):
         form_data = urllib.urlencode(data)
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
-        logging.info(form_data)
         return urlfetch.fetch(
             url=SLACK_ENDPOINT_URL + endpoint + '?' + form_data,
             method=method,
             headers=headers)
-    

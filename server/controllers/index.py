@@ -26,6 +26,18 @@ def addBreakfast(userid, channelid, channelname):
     if userresult.status_code != 200:
         return 'Cant\' retrieve user infos'
 
+    if channelname == 'directmessage':
+        return 'Breakfast command need to be triggered in a public or private channel !'
+
+    elif channelname == 'privategroup':
+        groupinfo = slack.getGroupInfos(channelid=channelid)
+
+        if userresult.status_code != 200:
+            return 'Cant\' retrieve user infos'
+
+        group = json.loads(groupinfo.content)
+        channelname = group['group']['name']
+
     user = json.loads(userresult.content)
 
     fullname = user['user']['real_name']
