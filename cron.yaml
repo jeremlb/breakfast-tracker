@@ -1,0 +1,5 @@
+cron:
+  - description: Notify user toomorow breakfast
+    url: /breakfast-notification
+    schedule: every day 18:00
+    timezone: Europe/Paris

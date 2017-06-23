@@ -8,3 +8,4 @@ def init_app(appli):
     app = appli
 
     from .index import *
+    from .notification import *

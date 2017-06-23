@@ -32,8 +32,8 @@ def addBreakfast(userid, channelid, channelname):
     elif channelname == 'privategroup':
         groupinfo = slack.getGroupInfos(channelid=channelid)
 
-        if userresult.status_code != 200:
-            return 'Cant\' retrieve user infos'
+        if groupinfo.status_code != 200:
+            return 'Cant\' retrieve group infos'
 
         group = json.loads(groupinfo.content)
         channelname = group['group']['name']
@@ -67,7 +67,7 @@ def listNextBreakfasts(channel=None):
     text = 'Breakfast planning : \n'
 
     for b in nextBreakfasts:
-        text += b['date'].strftime('%d/%m/%Y') + ' : ' + b['fullname']
+        text += b['date'].strftime('%d/%m/%Y') + ' : ' + b['fullname'] + ' @' + b['username']
         text += ' pour #' + b['channelname'] if channel is None and b.has_key('channelname') and b['channelname'] is not None else ''
         text += '\n'
 
@@ -85,6 +85,9 @@ def breakfast():
     channelid = request.form.get('channel_id', type=str)
     channelname = request.form.get('channel_name', type=str)
 
+    logging.info(request.form)
+    logging.info(channelname)
+
     if command == '/bt':
         return addBreakfast(userid, channelid, channelname)
     elif command == '/breakfast':
@@ -92,5 +95,88 @@ def breakfast():
             return listNextBreakfasts(channel=channelid)
         elif text == 'all':
             return listNextBreakfasts()
+    
+    logging.info(request.form)
 
     return 'Bad command'
+
+@app.route('/interactive-message', methods=['GET', 'POST'])
+def interactiveMessage():
+    logging.info(request.form)
+
+    payload = request.form.get('payload', type=str)
+
+    if payload is not None:
+        resp = make_response(json.dumps({
+            "text": "Would you like to play a game?",
+                "attachments": [
+                    {
+                        "text": "Choose a game to play",
+                        "fallback": "You are unable to choose a game",
+                        "callback_id": "wopr_game",
+                        "color": "#3AA3E3",
+                        "attachment_type": "default",
+                        "actions": [
+                            {
+                                "name": "game",
+                                "text": "Plop1",
+                                "type": "button",
+                                "value": "chess"
+                            },
+                            {
+                                "name": "game",
+                                "text": "Plop2",
+                                "type": "button",
+                                "value": "maze"
+                            }
+                        ]
+                    }
+                ]
+            }))
+
+    else:
+
+
+        resp = make_response(json.dumps({
+            "text": "Would you like to play a game?",
+                "attachments": [
+                    {
+                        "text": "Choose a game to play my game @jeremilebourhis",
+                        "fallback": "You are unable to choose a game",
+                        "callback_id": "wopr_game",
+                        "color": "#3AA3E3",
+                        "attachment_type": "default",
+                        "actions": [
+                            {
+                                "name": "game",
+                                "text": "Chess",
+                                "type": "button",
+                                "value": "chess"
+                            },
+                            {
+                                "name": "game",
+                                "text": "Falken's Maze",
+                                "type": "button",
+                                "value": "maze"
+                            },
+                            {
+                                "name": "game",
+                                "text": "Thermonuclear War",
+                                "style": "danger",
+                                "type": "button",
+                                "value": "war",
+                                "confirm": {
+                                    "title": "Are you sure?",
+                                    "text": "Wouldn't you prefer a good game of chess?",
+                                    "ok_text": "Yes",
+                                    "dismiss_text": "No"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }))
+
+    resp.headers['Content-Type'] = 'application/json'
+
+    return resp

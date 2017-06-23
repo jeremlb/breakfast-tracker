@@ -51,3 +51,18 @@ class Breakfast(ndb.Model):
             results.append(b)
 
         return results
+
+    @staticmethod
+    def getTomorowBreakfast():
+        tomorow = datetime.today() + timedelta(days=1)
+        q = Breakfast.query().filter(Breakfast.date == tomorow)
+
+        results = []
+        for breakfast in q.fetch():
+            b = breakfast.to_dict()
+            b['id'] = breakfast.key.id()
+            results.append(b)
+
+        return results
+
+
