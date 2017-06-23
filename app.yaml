@@ -9,7 +9,7 @@ handlers:
 
 - url: /breakfast-notification
   script: server.main.app
-  # login: admin
+  login: admin
 
 - url: /.*
   script: server.main.app

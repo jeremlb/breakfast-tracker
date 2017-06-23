@@ -14,8 +14,17 @@ from . import app
 from ..utils.slack import Slack
 from ..models.breakfast import Breakfast
 
+def datetime_handler(x):
+    if isinstance(x, datetime):
+        return x.isoformat()
+    raise TypeError("Unknown type")
+
 @app.route('/breakfast-notification', methods=['GET'])
 def notification():
+    slack = Slack(token=app.config['SLACK_APP_TOKEN'])
 
-    
-    return json.dumps(Breakfast.getTomorowBreakfast())
+    for breakfast in Breakfast.getTomorowBreakfast():
+        text = 'Breakfast Tracker remind you that you should come with a breakfast tomorrow for #' + breakfast['channelname']
+        slack.postMessage(breakfast['userid'], text)
+
+    return make_response('ok')

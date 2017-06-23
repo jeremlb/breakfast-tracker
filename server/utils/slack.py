@@ -8,13 +8,14 @@ class Slack:
     def __init__(self, token):
         self.token = token
 
-    def postMessage(self, channel, text):
+    def postMessage(self, channel, text, attachments='', linknames=0):
         return self._makeRequest('chat.postMessage', urlfetch.GET, {
             'token': self.token,
             'channel': channel,
             'text': text,
+            'attachments': attachments,
             'parse': 'full',
-            'link_names': 1,
+            'link_names': linknames,
             'pretty':1
         })
 

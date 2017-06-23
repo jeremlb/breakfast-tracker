@@ -14,11 +14,6 @@ from . import app
 from ..utils.slack import Slack
 from ..models.breakfast import Breakfast
 
-def datetime_handler(x):
-    if isinstance(x, datetime):
-        return x.isoformat()
-    raise TypeError("Unknown type")
-
 def addBreakfast(userid, channelid, channelname):
     slack = Slack(token=app.config['SLACK_APP_TOKEN'])
     userresult = slack.getUserInfos(userid=userid)
@@ -57,7 +52,7 @@ def addBreakfast(userid, channelid, channelname):
     bt.put()
 
     text = '@' + username + ' merci pour le petit dej, le ' + date.strftime('%A %d %B %Y')
-    slack.postMessage(channelid, text)
+    slack.postMessage(channelid, text, linknames=1)
 
     return 'Merci pour ce moment !'
 
@@ -95,7 +90,7 @@ def breakfast():
             return listNextBreakfasts(channel=channelid)
         elif text == 'all':
             return listNextBreakfasts()
-    
+
     logging.info(request.form)
 
     return 'Bad command'

@@ -3,6 +3,12 @@ from google.appengine.ext import ndb
 
 from ..utils.workday import WorkDay
 
+import logging
+
+def get_datetime_today_midnight():
+    return datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+
+
 class Breakfast(ndb.Model):
     username = ndb.StringProperty()
     userid = ndb.StringProperty()
@@ -31,16 +37,16 @@ class Breakfast(ndb.Model):
     def getNextAvailableDate(channelid):
         q = Breakfast.query().filter(Breakfast.channelid == channelid).order(-Breakfast.date)
         r = q.fetch(1)
-        date = r[0].date if len(r) > 0 else datetime.today()
+        date = r[0].date if len(r) > 0 else get_datetime_today_midnight()
 
         return Breakfast._getNextWorkDay(date)
 
     @staticmethod
     def getNextBreakfasts(channelid=None):
         if channelid is not None:
-            q = Breakfast.query().filter(Breakfast.date > datetime.today()).filter(Breakfast.channelid == channelid)
+            q = Breakfast.query().filter(Breakfast.date > get_datetime_today_midnight()).filter(Breakfast.channelid == channelid)
         else:
-            q = Breakfast.query().filter(Breakfast.date > datetime.today())
+            q = Breakfast.query().filter(Breakfast.date > get_datetime_today_midnight())
 
         q.order(Breakfast.date)
 
@@ -54,8 +60,11 @@ class Breakfast(ndb.Model):
 
     @staticmethod
     def getTomorowBreakfast():
-        tomorow = datetime.today() + timedelta(days=1)
-        q = Breakfast.query().filter(Breakfast.date == tomorow)
+        tomorow = get_datetime_today_midnight() + timedelta(days=1)
+        dayafter = tomorow + timedelta(days=1)
+        logging.info(tomorow)
+        logging.info(dayafter)
+        q = Breakfast.query().filter(Breakfast.date > tomorow).filter(Breakfast.date < dayafter)
 
         results = []
         for breakfast in q.fetch():
